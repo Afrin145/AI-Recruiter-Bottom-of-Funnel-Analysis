@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bottom of Funnel Analysis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #0a1628 0%, #1a2942 100%);
+            color: #e0e6ed;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #00d4ff 0%, #7b61ff 50%, #ff6ec7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+        }
+        
+        .date-range {
+            color: #8b9db8;
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        .divider {
+            height: 2px;
+            background: linear-gradient(90deg, #00d4ff 0%, #7b61ff 50%, #ff6ec7 100%);
+            margin: 30px 0;
+            opacity: 0.3;
+        }
+        
+        .summary-box {
+            background: rgba(26, 41, 66, 0.6);
+            border-left: 4px solid #00d4ff;
+            border-radius: 8px;
+            padding: 35px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .summary-box h2 {
+            color: #00d4ff;
+            font-size: 28px;
+            margin-bottom: 25px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .summary-box p {
+            line-height: 1.8;
+            color: #c5d1e0;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .highlight {
+            color: #ffd93d;
+            font-weight: 600;
+        }
+        
+        .highlight-green {
+            color: #00ff88;
+            font-weight: 600;
+        }
+        
+        .highlight-purple {
+            color: #b794f6;
+            font-weight: 600;
+        }
+        
+        .note-box {
+            background: rgba(123, 97, 255, 0.1);
+            border-left: 3px solid #7b61ff;
+            padding: 20px;
+            margin-top: 25px;
+            border-radius: 4px;
+        }
+        
+        .note-box p {
+            margin: 0;
+            font-size: 15px;
+            color: #b8c5d6;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .metric-card {
+            background: rgba(26, 41, 66, 0.6);
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid rgba(123, 97, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            border-color: rgba(123, 97, 255, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .metric-card h3 {
+            color: #7b61ff;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .metric-value {
+            font-size: 42px;
+            font-weight: 700;
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+        
+        .metric-label {
+            color: #8b9db8;
+            font-size: 14px;
+        }
+        
+        .comparison-section {
+            background: rgba(26, 41, 66, 0.6);
+            border-radius: 12px;
+            padding: 35px;
+            margin-bottom: 40px;
+        }
+        
+        .comparison-section h2 {
+            color: #00d4ff;
+            font-size: 28px;
+            margin-bottom: 30px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .ai-comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .ai-card {
+            background: rgba(10, 22, 40, 0.6);
+            border-radius: 8px;
+            padding: 25px;
+            border: 2px solid transparent;
+        }
+        
+        .ai-card.alex {
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+        
+        .ai-card.sense {
+            border-color: rgba(255, 110, 199, 0.3);
+        }
+        
+        .ai-card h3 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .ai-card.alex h3 {
+            color: #00d4ff;
+        }
+        
+        .ai-card.sense h3 {
+            color: #ff6ec7;
+        }
+        
+        .ai-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(139, 157, 184, 0.1);
+        }
+        
+        .ai-stat:last-child {
+            border-bottom: none;
+        }
+        
+        .ai-stat-label {
+            color: #8b9db8;
+            font-size: 14px;
+        }
+        
+        .ai-stat-value {
+            color: #e0e6ed;
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .conversion-metrics {
+            background: rgba(10, 22, 40, 0.6);
+            border-radius: 8px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+        
+        .conversion-metrics h3 {
+            color: #b794f6;
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .conversion-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(139, 157, 184, 0.1);
+        }
+        
+        .conversion-row:last-child {
+            border-bottom: none;
+        }
+        
+        .conversion-label {
+            color: #c5d1e0;
+            font-size: 15px;
+        }
+        
+        .conversion-value {
+            color: #00ff88;
+            font-size: 24px;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>AI Recruiter – Bottom of Funnel Analysis</h1>
+            <p class="date-range">Date Range Analyzed • [2025-04-01 → 2026-01-31]</p>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="summary-box">
+            <h2>Executive Summary</h2>
+            <p>This analysis evaluates <span class="highlight">Bottom-of-Funnel (BOF)</span> performance for both Alex and Sense AI recruiting platforms across the critical conversion stages from approximately April 2025 through January 2026, covering <span class="highlight-green">313 total client submissions</span>.</p>
+            
+            <p>The combined platform achieved a <span class="highlight">17.9% submission-to-interview</span> conversion rate with 56 total interviews secured, demonstrating effective initial qualification and client-candidate matching. Interview quality translated to a strong <span class="highlight">19.6% interview-to-offer</span> rate (11 offers extended), indicating well-prepared candidates reaching final stages.</p>
+            
+            <p>Most notably, the platforms achieved a robust <span class="highlight-green">63.6% offer acceptance rate</span> with 7 successful hires from 11 offers, significantly outperforming typical industry benchmarks of 40-50% and suggesting excellent candidate engagement, competitive positioning, and offer presentation throughout the recruitment journey.</p>
+            
+            <p>Sense demonstrated superior conversion efficiency with <span class="highlight-purple">2.89% end-to-end conversion</span> (submission to hire) compared to Alex's 1.43%, while processing 23% more submissions. This suggests Sense's real-time engagement model may provide advantages in candidate quality and commitment at the bottom of funnel stages.</p>
+            
+            <div class="note-box">
+                <p>The exceptionally high offer acceptance rate (63.6%) indicates both platforms excel at candidate relationship management and setting appropriate expectations throughout the process, reducing offer decline risk and maximizing hiring efficiency.</p>
+            </div>
+        </div>
+        
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <h3>Total Submissions</h3>
+                <div class="metric-value">313</div>
+                <div class="metric-label">Client submissions across both platforms</div>
+            </div>
+            
+            <div class="metric-card">
+                <h3>Interviews Secured</h3>
+                <div class="metric-value">56</div>
+                <div class="metric-label">17.9% conversion from submissions</div>
+            </div>
+            
+            <div class="metric-card">
+                <h3>Offers Extended</h3>
+                <div class="metric-value">11</div>
+                <div class="metric-label">19.6% conversion from interviews</div>
+            </div>
+            
+            <div class="metric-card">
+                <h3>Successful Hires</h3>
+                <div class="metric-value">7</div>
+                <div class="metric-label">63.6% offer acceptance rate</div>
+            </div>
+        </div>
+        
+        <div class="comparison-section">
+            <h2>Platform Performance Comparison</h2>
+            
+            <div class="ai-comparison">
+                <div class="ai-card alex">
+                    <h3>ALEX</h3>
+                    <div class="ai-stat">
+                        <span class="ai-stat-label">Client Submissions</span>
+                        <span class="ai-stat-value">140</span>
+                    </div>
+                    <div class="ai-stat">
+                        <span class="ai-stat-label">Interviews</span>
+                        <span class="ai-stat-value">26</span>
+                    </div>
+                    <div class="ai-stat">
+                        <span class="ai-stat-label">Offers</span>
+                        <span class="ai-stat-value">4</span>
+                    </div>
+                    <div class="ai-stat">
+                        <span class="ai-stat-label">Hires</span>
+                        <span class="ai-stat-value">2</span>
+                    </div>
+                </div>
+                
+                <div class="ai-card sense">
+                    <h3>SENSE</h3>
+                    <div class="ai-stat">
+                        <span class="ai-stat-label">Client Submissions</span>
+                        <span class="ai-stat-value">173</span>
+                    </div>
+                    <div class="ai-stat">
+                        <span class="ai-stat-label">Interviews</span>
+                        <span class="ai-stat-value">30</span>
+                    </div>
+                    <div class="ai-stat">
+                        <span class="ai-stat-label">Offers</span>
+                        <span class="ai-stat-value">7</span>
+                    </div>
+                    <div class="ai-stat">
+                        <span class="ai-stat-label">Hires</span>
+                        <span class="ai-stat-value">5</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="conversion-metrics">
+                <h3>Overall Conversion Rates</h3>
+                <div class="conversion-row">
+                    <span class="conversion-label">Submission → Interview</span>
+                    <span class="conversion-value">17.9%</span>
+                </div>
+                <div class="conversion-row">
+                    <span class="conversion-label">Interview → Offer</span>
+                    <span class="conversion-value">19.6%</span>
+                </div>
+                <div class="conversion-row">
+                    <span class="conversion-label">Offer → Hire</span>
+                    <span class="conversion-value">63.6%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
